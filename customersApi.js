@@ -1,6 +1,4 @@
-
-
-let express=require("express");
+ let express=require("express");
 let app=express();
 app.use(express.json());
 app.use(function (req,res,next){
@@ -32,9 +30,6 @@ let { customerData }=require("./customerData.js");
     });
   });
 
-  
-
-
   app.get("/customers",function(req,res){
     fs.readFile(fname,"utf8",function(err,data){
         if(err) res.status(404).send(err);
@@ -45,32 +40,28 @@ let { customerData }=require("./customerData.js");
     })
   })
     app.get("/customers/:id",function(req,res){
-    let id=+req.params.id;
+    let id=req.params.id;
     fs.readFile(fname,"utf8",function(err,data){
         if(err) res.status(404).send(err);
         else{
 
             let customersArray=JSON.parse(data);
-            let customer=customersArray.find((st)=>st.id===id);
-            if(customer) res.send(customer);
-             else res.status(404).send("No customer found");
+            let customer=customersArray.find((st)=>st.id==id);
+            if (customer) res.send(customer);
+            else res.status(404).send("No customer found");
 
         }
     })
   })
-
-  app.post("/customers ",function(req,res){
+  
+  app.post("/customers",function(req,res){
     let body=req.body;
     fs.readFile(fname,"utf8",function(err,data){
         if(err) res.status(404).send(err);
         else{
             let customersArray=JSON.parse(data);
-            let maxid=customersArray.reduce(
-                (acc,curr)=>(curr.id>acc?curr.id:acc),
-           0
-            );
-            let newid=maxid+1;
-            let newcustome={...body,id:newid};
+           
+            let newcustome={...body};
             customersArray.push(newcustome);
             let data1=JSON.stringify(customersArray);
             fs.writeFile(fname,data1,function(err){
@@ -84,12 +75,12 @@ let { customerData }=require("./customerData.js");
 
   app.put("/customers/:id",function(req,res){
     let body=req.body;
-    let id=+req.params.id;
+    let id=req.params.id;
     fs.readFile(fname,"utf8",function(err,data){
         if(err) res.status(404).send(err);
         else{
             let customersArray=JSON.parse(data);
-            let index=customersArray.findIndex((st)=>st.id===id);
+            let index=customersArray.findIndex((st)=>st.id==id);
             if(index>=0){
                 let updateCutomer={...customersArray[index],...body};
                 customersArray[index]=updateCutomer;
@@ -106,13 +97,13 @@ let { customerData }=require("./customerData.js");
    
 
   app.delete("/customers/:id",function(req,res){
-    let body=req.body;
-    let id=+req.params.id;
+   
+    let id=req.params.id;
     fs.readFile(fname,"utf8",function(err,data){
         if(err) res.status(404).send(err);
         else{
             let customersArray=JSON.parse(data);
-            let index=customersArray.findIndex((st)=>st.id===id);
+            let index=customersArray.findIndex((st)=>st.id==id);
             if(index>=0){
               let deletedCustomer=customersArray.splice(index,1);
                 let data1=JSON.stringify(customersArray);
